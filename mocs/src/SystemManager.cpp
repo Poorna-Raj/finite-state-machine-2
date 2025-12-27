@@ -5,7 +5,7 @@ SystemManager::SystemManager(
     Button *rB,
     LED *sL,
     LED *dL)
-    : modeButton(mB), resetButton(rB), stateLED(sL), diagLED(dL), state(SystemState::BOOT), startTime(0), prevState(SystemState::BOOT)
+    : modeButton(mB), resetButton(rB), stateLED(sL), diagLED(dL), state(SystemState::BOOT), startTime(0), prevState(SystemState::BOOT), stateChanged(false)
 {
 }
 
@@ -20,6 +20,7 @@ void SystemManager::begin()
 void SystemManager::update()
 {
     now = millis();
+    stateChanged = false;
 
     modeButton->update();
     resetButton->update();
@@ -49,13 +50,23 @@ void SystemManager::update()
     }
 
     updateModeResetButton();
+    if (stateChanged)
+        return;
+
     updateModeButton();
+    if (stateChanged)
+        return;
+
     updateResetButton();
 }
 
-void SystemManager::setState(SystemState state)
+void SystemManager::setState(SystemState newState)
 {
-    this->state = state;
+    if (state != newState)
+    {
+        state = newState;
+        stateChanged = true;
+    }
 }
 
 void SystemManager::onEnterState(SystemState state)
