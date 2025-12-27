@@ -1,18 +1,20 @@
 #include <Arduino.h>
+#include "SystemManager.h"
 
-// put function declarations here:
-int myFunction(int, int);
+LED stateLED(2, 200);
+LED diagLED(3, 200);
 
-void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+Button modeButton(6);
+Button resetButton(7);
+
+SystemManager manager(&modeButton, &resetButton, &stateLED, &diagLED);
+
+void setup()
+{
+  manager.begin();
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-}
-
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+void loop()
+{
+  manager.update();
 }
