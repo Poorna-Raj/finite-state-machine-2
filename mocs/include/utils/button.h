@@ -16,4 +16,5 @@ public:
     void update();
 
     bool isPressed();
+    uint8_t getPin() const;
 };

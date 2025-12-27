@@ -6,13 +6,12 @@ void Button::begin()
 }
 
 Button::Button(const uint8_t pin)
-    : pin(pin), current(false), previous(false), state(false) {}
+    : pin(pin), state(false), previous(false), current(false) {}
 
 void Button::update()
 {
     current = digitalRead(pin);
 
-    // TODO:: try with the condition of current != previous
     if (current && !previous)
     {
         state = true;
@@ -29,4 +28,9 @@ bool Button::isPressed()
         return true;
     }
     return false;
+}
+
+uint8_t Button::getPin() const
+{
+    return pin;
 }
