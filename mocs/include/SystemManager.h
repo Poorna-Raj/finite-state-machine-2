@@ -9,12 +9,16 @@ class SystemManager
 private:
     unsigned long now;
     unsigned long startTime;
+
     Button *modeButton;
     Button *resetButton;
     LED *stateLED;
     LED *diagLED;
+
     SystemState state;
     SystemState prevState;
+
+    bool stateChanged;
 
 public:
     void begin();
