@@ -5,7 +5,7 @@ SystemManager::SystemManager(
     Button *rB,
     LED *sL,
     LED *dL)
-    : modeButton(mB), resetButton(rB), stateLED(sL), diagLED(dL), state(SystemState::BOOT), startTime(0), prevState(SystemState::BOOT), stateChanged(false)
+    : startTime(0), modeButton(mB), resetButton(rB), stateLED(sL), diagLED(dL), state(SystemState::BOOT), prevState(SystemState::BOOT), stateChanged(false)
 {
 }
 
@@ -15,6 +15,8 @@ void SystemManager::begin()
     resetButton->begin();
     stateLED->begin();
     diagLED->begin();
+
+    onEnterState(state);
 }
 
 void SystemManager::update()
@@ -50,13 +52,7 @@ void SystemManager::update()
     }
 
     updateModeResetButton();
-    if (stateChanged)
-        return;
-
     updateModeButton();
-    if (stateChanged)
-        return;
-
     updateResetButton();
 }
 
@@ -79,30 +75,35 @@ void SystemManager::onEnterState(SystemState state)
         stateLED->setShouldBlink(true);
         diagLED->setShouldBlink(false);
         diagLED->setState(false);
+        Serial.println("BOOT");
         break;
     case SystemState::IDLE:
         stateLED->setShouldBlink(false);
         stateLED->setState(false);
         diagLED->setDuration(1000);
         diagLED->setShouldBlink(true);
+        Serial.println("IDLE");
         break;
     case SystemState::ACTIVE:
         stateLED->setShouldBlink(false);
         stateLED->setState(true);
         diagLED->setShouldBlink(false);
         diagLED->setState(false);
+        Serial.println("ACTIVE");
         break;
     case SystemState::ERROR:
         stateLED->setShouldBlink(true);
         stateLED->setDuration(200);
         diagLED->setShouldBlink(true);
         diagLED->setDuration(200);
+        Serial.println("ERROR");
         break;
     case SystemState::RECOVERY:
         stateLED->setShouldBlink(false);
         stateLED->setState(false);
         diagLED->setShouldBlink(false);
         diagLED->setState(true);
+        Serial.println("RECOVERY");
         break;
     default:
         Serial.println("Unknown State");
@@ -138,11 +139,14 @@ void SystemManager::updateResetButton()
 
 void SystemManager::updateModeResetButton()
 {
-    if (modeButton->isPressed() && resetButton->isPressed())
+    if (digitalRead(modeButton->getPin()) && digitalRead(resetButton->getPin()))
     {
         if (state == SystemState::ACTIVE || state == SystemState::IDLE)
         {
             setState(SystemState::ERROR);
+
+            modeButton->isPressed();
+            resetButton->isPressed();
         }
     }
 }
