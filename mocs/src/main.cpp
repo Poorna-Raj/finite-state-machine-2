@@ -11,6 +11,7 @@ SystemManager manager(&modeButton, &resetButton, &stateLED, &diagLED);
 
 void setup()
 {
+  Serial.begin(9600);
   manager.begin();
 }
 
